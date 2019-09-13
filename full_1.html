@@ -116,13 +116,12 @@ slash.src = "slash.png";
 aimimg.src = "aim.png";
 
 var frameCount = 0;
-
 var souls = 0;
 
 var player = {
-	x:50,
+	x:200,
 	spdX:30,
-	y:40,
+	y:200,
 	spdY:5,
 	souls:0,
 	hp:10,
@@ -240,8 +239,8 @@ Enemy = function (id,x,y,spdX,spdY,width,height,color,hp, img,frameid, frames, t
 randomlyGenerateEnemy = function(ex,ey){
 	var x = ex;
 	var y = ey;
-	var height = 40;//НАСТРОИТЬ
-	var width = 40;//НАСТРОИТЬ
+	var height = 40;
+	var width = 40;
 	var id = Math.random();
 	var spdX = 0;
 	var spdY = 0;
@@ -259,7 +258,6 @@ randomlyGenerateEnemy = function(ex,ey){
 	};
 	Enemy(id,x,y,spdX,spdY,width,height,color,hp, img,frameid, frames, type);
 
-	
 }
 
 Upgrade = function (id,x,y,spdX,spdY,width,height,img,category,color){
@@ -273,15 +271,16 @@ Upgrade = function (id,x,y,spdX,spdY,width,height,img,category,color){
 		height:height,
 		color:color,
 		img:img,
-		//
 		category:category,
 	};
 	upgradeList[id] = asd;
 }
 
 randomlyGenerateUpgrade = function(){
-	var x = Math.random()*WIDTH;
-	var y = Math.random()*HEIGHT;
+	var randomx = Math.floor(Math.random()*(WIDTH-40));
+	var randomy = Math.floor(Math.random()*(HEIGHT-40));
+	var x = randomx;
+	var y = randomy;
 	var height = 20;
 	var width = 20;
 	var id = Math.random();
@@ -295,7 +294,6 @@ randomlyGenerateUpgrade = function(){
 		var category = 'atkSpd';
 		var color = 'purple';
 	}
-	
 	Upgrade(id,x,y,spdX,spdY,width,height,img,category,color);
 }
 
@@ -310,7 +308,6 @@ Bullet = function (id,x,y,spdX,spdY,width,height,img,color){
 		height:height,
 		color:color,
 		img:img,
-		//
 		timer:0,
 	};
 	bulletList[id] = asd;
@@ -322,8 +319,8 @@ randomlyGenerateBullet = function(){
 	var ax = aim.x;
 	var ay = aim.y;
 	var t = Math.sqrt(Math.pow((ax - x),2)+Math.pow((ay - y),2)) / 30;
-	var height = 10;//НАСТРОИТЬ
-	var width = 10;//НАСТРОИТЬ
+	var height = 10;
+	var width = 10;
 	var id = Math.random();
 	var color = "black";
 	var angle = Math.random()*360;
@@ -360,7 +357,6 @@ EBullet = function (id,x,y,spdX,spdY,width,height,img){
 		height:height,
 		color:'purple',
 		img:img,
-		//
 		timer:0,
 	};
 	ebulletList[id] = asd;
@@ -383,7 +379,7 @@ randomlyGenerateEBullet = function(spawnx, spawny, targetx, targety){
 	EBullet(id,x,y,spdX,spdY,width,height,img);
 }
 useRange = function(something1, something2){
-	if(player.attackCounter > 25){	//every 1 sec
+	if(player.attackCounter > 50){
 		randomlyGenerateEBullet(Math.floor(something1.x),Math.floor(something1.y),something2.x,something2.y);
 		player.attackCounter = 0;
 	}
@@ -516,7 +512,10 @@ var WallColl = function(someone, wall){
 	//SPAWN CHECK
 	if(isColliding && someone.color == "red" && wall.color === wallColor){
 		if(
-			someone.x == wall.x
+			someone.x <= wall.x - 20 &&
+			someone.x >= wall.x + 20 &&
+			someone.y <= wall.y - 20 &&
+			someone.y >= wall.y + 20
 		){
 			someone.hp-=1000;
 		}
@@ -547,14 +546,14 @@ HALT = function(someone){
 
 //MAIN ATTACK (BOW)
 document.onclick = function(mouse){
-	if(player.attackCounter > 25){ //НАСТРОИТЬ
+	if(player.attackCounter > 35){
 		randomlyGenerateBullet();
 		player.attackCounter = 0;
 	}
 }
 //ATTERNATIVE ATTACK (SWORD)
 document.oncontextmenu = function(mouse){
-	if(player.attackRCounter > 10){ //НАСТРОИТЬ
+	if(player.attackRCounter > 10){
 		randomlyGenerateMelee();
 		player.attackRCounter = 0;
 	}
@@ -644,12 +643,24 @@ update = function(){
 	
 	frameCount++;
 	time++;
-	if(time == 10){
+	if(time == 1){
 		for(i = 0; i < 10; i++){
-			randomlyGenerateEnemy(Math.random()*WIDTH, Math.random()*HEIGHT); //Math.random()*WIDTH, Math.random()*HEIGHT
-		
+			var randomx = Math.floor(Math.random()*(WIDTH-40));
+			var randomy = Math.floor(Math.random()*(HEIGHT-40));
+			randomlyGenerateEnemy(randomx, randomy);
 			randomlyGenerateUpgrade();
 		}
+	}
+	if(time == 200){
+		
+		for(i = 0; i < 10; i++){
+			var randomx = Math.floor(Math.random()*(WIDTH-40));
+			var randomy = Math.floor(Math.random()*(HEIGHT-40));
+			randomlyGenerateEnemy(randomx, randomy);
+			randomlyGenerateUpgrade();
+		}
+		time = 1;
+		day++;
 	}
 	//if(frameCount % 100 === 0)	//every 4 sec
 	//	randomlyGenerateEnemy();
@@ -704,6 +715,7 @@ update = function(){
 		var damagePlayer = testCollisionEntity(ebulletList[key],player);
 		if(damagePlayer){
 			toRemove = true;
+			delete ebulletList[key];
 			player.hp--;
 			break;
 		}
@@ -740,7 +752,7 @@ update = function(){
 		}
 		var isColliding = testCollisionEntity(player,enemyList[key]);
 		if(isColliding){
-			player.hp = player.hp;
+			player.hp--;
 		}
 		if(enemyList[key].hp <= 0 ){
 			delete enemyList[key];
@@ -749,32 +761,35 @@ update = function(){
 	}
 	if(player.hp <= 0){
 		var timeSurvived = Date.now() - timeWhenGameStarted;		
-		console.log("You lost! You survived for " + timeSurvived + " ms.");		
+		alert("You lost! You survived for " + day + " Days.");		
 		startNewGame();
 	}
 	updatePlayerPosition();
 	
 	drawEntity(aim);
-	ctx.fillText(player.hp + " Hp",0,30);
-	ctx.fillText(player.souls + " Souls",0,60);
-	ctx.fillText('Day Time: ' + time,200,30);
+	ctx.fillText(player.hp + " Hp",player.x - 90,player.y - 40);
+	ctx.fillText(player.souls + " Souls",player.x + 30,player.y - 40);
+	ctx.fillText('Day Time: ' + time,30,60);
+	ctx.fillText('Day: ' + day,30,90);
 }
 
 startNewGame = function(){
-	player.hp = 10;
+	player.hp = 50;
+	player.x = 200;
+	player.y = 200;
 	timeWhenGameStarted = Date.now();
 	frameCount = 0;
 	time = 0;
+	day = 0;
 	enemyList = {};
 	upgradeList = {};
 	bulletList = {};
-
 	tilesList = {};
 }
 
 startNewGame();
 
-setInterval(update,60); //НАСТРОИТЬ 40
+setInterval(update,60); 
 </script>
 </body>
 </html>
