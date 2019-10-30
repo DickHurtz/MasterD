@@ -14,13 +14,61 @@
 	background-position: -25px -25px;
 	cursor: none;
 }
+body{
+	margin: 0;
+	position: relative;
+}
+.position{
+	z-index: 1000;
+	position: absolute;
+	transform: translate(0,-100%);
+}
+.buttons{
+	position: relative;
+	width: 200px;
+	height: 100px;
+}
+.buttons button{
+position: absolute;
+margin: auto;
+}
+.buttons button:nth-of-type(1){
+	right: 0;
+	top: 0;
+	bottom:0;
+}
+.buttons button:nth-of-type(2){
+	left: 0;
+	top: 0;
+	bottom:0;
+}
+.buttons button:nth-of-type(3){
+	top: 0;
+	left: 0;
+	right: 0;
+}
+.buttons button:nth-of-type(4){
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
 </style>
-<div>
-<button onmousedown="player.pressingRight = true" onmouseup="player.pressingRight = false">right</button>
+<div class="position">
+	<div class="buttons">
+		<button onmousedown="player.pressingRight = true" onmouseup="player.pressingRight = false" ontouchstart="player.pressingRight = true" ontouchend="player.pressingRight = false">right</button>
+		<button onmousedown="player.pressingLeft = true" onmouseup="player.pressingLeft = false" ontouchstart="player.pressingLeft = true" ontouchend="player.pressingLeft = false">left</button>
+		<button onmousedown="player.pressingUp = true" onmouseup="player.pressingUp = false" ontouchstart="player.pressingUp = true" ontouchend="player.pressingUp = false">up</button>
+		<button onmousedown="player.pressingDown = true" onmouseup="player.pressingDown = false" ontouchstart="player.pressingDown = true" ontouchend="player.pressingDown = false">down</button>
+	</div>
 </div>
-<canvas id="ctx" width="1450" height="1450" style="border:1px solid #000000;"></canvas>
-
+<canvas id="ctx" width="1450" height="1450" style="border:1px solid #000000;">
+</canvas>
 <script>
+$(document).ready(function(){
+	var ScreenW = $(window).width();
+	var ScreenH = $(window).height();
+	$(".position").css({"left":"20px","top":ScreenH+"px"});
+});
 var ctx = document.getElementById("ctx").getContext("2d"); 
 ctx.font = '30px Arial';
 var HEIGHT = document.getElementById("ctx").clientHeight;
@@ -566,6 +614,9 @@ document.onkeyup = function(event){
 	player.standingStill = true;
 	player.frameid = 0;
 }
+//while(){
+//console.log("asdasd");
+//}
 RIGHT = function(smth){
 	smth.x += 10;
 	drawEntity(smth, 0);
