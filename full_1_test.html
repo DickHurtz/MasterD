@@ -7,12 +7,17 @@
 </head>
 <body>
 <style>
+*{
+box-sizing: border-box !improtant;
+  touch-action: manipulation !important;
+}
 #ctx{
 	border: 1px solid #000;
 	background: url('testmap.png');
 	background-size: cover;
 	background-position: -25px -25px;
 	cursor: none;
+	overflow: scroll;
 }
 body{
 	margin: 0;
@@ -25,12 +30,14 @@ body{
 }
 .buttons{
 	position: relative;
-	width: 200px;
-	height: 100px;
+	width: 300px;
+	height: 200px;
 }
 .buttons button{
-position: absolute;
-margin: auto;
+	position: absolute;
+	margin: auto;
+	width: 100px;
+	height: 100px;
 }
 .buttons button:nth-of-type(1){
 	right: 0;
@@ -67,6 +74,7 @@ margin: auto;
 $(document).ready(function(){
 	var ScreenW = $(window).width();
 	var ScreenH = $(window).height();
+	$("body").css({"width":ScreenW+"px","height":ScreenH+"px"});
 	$(".position").css({"left":"20px","top":ScreenH+"px"});
 });
 var ctx = document.getElementById("ctx").getContext("2d"); 
